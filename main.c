@@ -7,7 +7,6 @@
 #include "hal.h"
 #include "memory_protection.h"
 #include <main.h>
-//HEY
 
 int main(void)
 {
