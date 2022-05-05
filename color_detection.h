@@ -5,15 +5,18 @@
  *      Author: misha
  */
 
-#define CAMERA_OFF 0;
-#define CAMERA_ON 1;
+#define CAMERA_OFF 0
+#define CAMERA_ON 1
+
+#include <stdlib.h>
 
 #ifndef COLOR_DETECTION_H_
 #define COLOR_DETECTION_H_
-#include <stdlib.h>
 
 
-void set_camera_mode(uint8_t sel_mode);
+
+
+void activate_camera(void);
 
 void start_ThdMovement(void);
 

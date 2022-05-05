@@ -20,10 +20,10 @@
 
 
 
-#define THRSH_RED 10;
-#define THRSH_BLUE 10;
-#define THRSH_GREEN 10;
-
+#define THRESH_RED 10
+#define THRESH_BLUE 10
+#define THRESH_GREEN 10
+#define IMAGE_BUFFER_SIZE 640
 
 static uint8_t cam_mode=CAMERA_OFF;
 
@@ -61,16 +61,16 @@ static THD_FUNCTION(ProcessImage, arg) {
     (void)arg;
 
 	uint8_t *img_buff_ptr;
-	uint8_t image[IMAGE_BUFFER_SIZE] = {0};
-	uint16_t lineWidth = 0;
+	//uint8_t image[IMAGE_BUFFER_SIZE] = {0};
+	//uint16_t lineWidth = 0;
 	int red_avg = 0;
 	int green_avg = 0;
 	int blue_avg = 0;
 
-	bool send_to_computer = true;
+	//bool send_to_computer = true;
 
     while(1){
-    	if(etat==MODE_ON){
+    	if(cam_mode==CAMERA_ON){
     	    //waits until an image has been captured
     		chBSemWait(&image_ready_sem);
     		//gets the pointer to the array filled with the last image in RGB565
@@ -82,33 +82,33 @@ static THD_FUNCTION(ProcessImage, arg) {
     			red_avg = red_avg+(((uint8_t)img_buff_ptr[i]&0xF8)/4);			//le img_buff_ptr pointe sur les bytes
 
     			//Extracts the green pixels
-    			green_avg = green_avg+(((uint8_t)img_buff_ptr[i]&0xE0)/32;
+    			green_avg = green_avg+(((uint8_t)img_buff_ptr[i]&0xE0)/32);
     			green_avg = green_avg+(((uint8_t)img_buff_ptr[i]&0x07)*8);
 
     			//Extracts the blue pixels
-    			blue_avg = blue_avg+(uint8_t)img_buff_ptr[i+1]&0x1F;
+    			blue_avg = blue_avg+((uint8_t)img_buff_ptr[i+1]&0x1F);
 
     			green_avg = green_avg/IMAGE_BUFFER_SIZE;
     			blue_avg = blue_avg/IMAGE_BUFFER_SIZE;
     			red_avg=red_avg/IMAGE_BUFFER_SIZE;
 
     			//green color detected
-    			if (green_avg>TRSH_GREEN & blue_avg<TRSH_BLUE & red_avg<TRSH_RED){
+    			if ((green_avg>THRESH_GREEN) & (blue_avg<THRESH_BLUE) & (red_avg<THRESH_RED)){
     				//faire une action pour la couleur verte
 
     			}
 
     			//blue color detected
-    			if (green_avg<TRSH_GREEN & blue_avg>TRSH_BLUE & red_avg<TRSH_RED){
+    			if ((green_avg<THRESH_GREEN) & (blue_avg>THRESH_BLUE) & (red_avg<THRESH_RED)){
     				//faire une action pour la couleur bleue
     			}
 
     			//red color dertected
-    			if (green_avg<TRSH_GREEN & blue_avg<TRSH_BLUE & red_avg>TRSH_RED){
+    			if ((green_avg<THRESH_GREEN) & (blue_avg<THRESH_BLUE) & (red_avg>THRESH_RED)){
     				//faire une action pour la couleur rouge
     			}
     		}
-    		cam_mode=CAMERA_OFF
+    		cam_mode=CAMERA_OFF;
     	}
     }
 
@@ -124,11 +124,8 @@ void process_image_start(void){
 	chThdCreateStatic(waCaptureImage, sizeof(waCaptureImage), NORMALPRIO, CaptureImage, NULL);
 }
 
-void start_ThdMovement(void){
-	motors_init();
-	chThdCreateStatic(waThdMovement, sizeof(waThdMovement), NORMALPRIO, ThdMovement, NULL);
-}
 
-void set_camera_mode(uint8_t sel_mode){
-	cam_mode=mode_sel;
+
+void activate_camera_mode(void){
+	cam_mode=CAMERA_ON;
 }

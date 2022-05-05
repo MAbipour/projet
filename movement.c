@@ -64,7 +64,7 @@ static THD_FUNCTION(ThdMovement, arg) {
         	case MODE_MOT_STRAIGHT_LINE:
         		start_motor_straight(SPEED_MOT, 1000);
         		stop_motor();
-        		set_camera_mode(CAMERA_ON)
+        		activate_camera();
         		chThdSleepMilliseconds(1000);
 //        		start_motor_straight(-SPEED_MOT, 1000);
 //        		stop_motor();
